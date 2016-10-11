@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -192,7 +192,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             current_depth += 1
 
             if is_fin(other_game_state, current_depth):
-                return other_game_state.getScore()
+                return self.evaluationFunction(other_game_state)
             value = float('-Inf')
             for action in other_game_state.getLegalActions(0):
                 value = max(value, min_value(other_game_state.generateSuccessor(0, action), current_depth, 1, alpha,
@@ -204,7 +204,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
         def min_value(other_game_state, current_depth, agent_index, alpha, beta):
             if is_fin(other_game_state, current_depth):
-                return other_game_state.getScore()
+                return self.evaluationFunction(other_game_state)
             value = float('Inf')
 
             for action in other_game_state.getLegalActions(agent_index):
@@ -222,20 +222,17 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             return value
 
         # Method decides whether game is finished or not. If it is, return score for current state.
-
         def is_fin(other_game_state, other_depth):
             return other_game_state.isWin() or other_game_state.isLose() or other_depth == self.depth
 
         # Method that decides whether or not the algo should continue on current node for alpha test
         # Returns true if algo should cut.
         def cutoff_test_alpha(value, alpha):
-            print value, alpha
             return value <= alpha
 
         # Method that decides whether or not the algo should continue on current node for beta test
         # Returns true if algo should cut.
         def cutoff_test_beta(value, beta):
-            print value, beta
             return value >= beta
 
         def alpha_beta_prune(start_game_state):
