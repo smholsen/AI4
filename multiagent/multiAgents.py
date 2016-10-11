@@ -146,12 +146,14 @@ class MinimaxAgent(MultiAgentSearchAgent):
             value = float('Inf')
 
             for action in other_game_state.getLegalActions(agent_index):
-                # We have now iterated through all the ghosts, so now pacman.
                 if agent_index == number_of_ghosts:
-                    value = min(value, max_value(other_game_state.generateSuccessor(agent_index, action), current_depth))
+                    # We have now iterated through all the ghosts, so now pacman.
+                    value = min(value, max_value(other_game_state.generateSuccessor(agent_index, action),
+                                                 current_depth))
                 else:
                     # Still calculating for ghost. Run again after for next agent.
-                    value = min(value, min_value(other_game_state.generateSuccessor(agent_index, action), current_depth, agent_index + 1))
+                    value = min(value, min_value(other_game_state.generateSuccessor(agent_index, action),
+                                                 current_depth, agent_index + 1))
             return value
 
         # Method decides whether game is finished or not. If it is, return score for current state.
@@ -239,12 +241,13 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             return_action = None
 
             best_value = -float('Inf')
-            alpha = float('-Inf')
+            alpha = -float('Inf')
             beta = float('Inf')
 
             for possible_action in start_game_state.getLegalActions(0):
                 current_depth = 0
 
+                # Start with pacmans move
                 value = min_value(start_game_state.generateSuccessor(0, possible_action), current_depth, 1, alpha, beta)
                 if value > best_value:
                     best_value = value
