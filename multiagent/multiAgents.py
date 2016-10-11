@@ -188,17 +188,21 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        def max_value(other_game_state, current_depth):
+        def max_value(other_game_state, current_depth, alpha, beta):
             current_depth += 1
 
             if is_fin(other_game_state, current_depth):
                 return other_game_state.getScore()
             value = float('-Inf')
             for action in other_game_state.getLegalActions(0):
-                value = max(value, min_value(other_game_state.generateSuccessor(0, action), current_depth, 1))
+                value = max(value, min_value(other_game_state.generateSuccessor(0, action), current_depth, 1, alpha,
+                                             beta))
+                if cutoff_test_beta(value, beta):
+                    return value
+                alpha = max(value, alpha)
             return value
 
-        def min_value(other_game_state, current_depth, agent_index):
+        def min_value(other_game_state, current_depth, agent_index, alpha, beta):
             if is_fin(other_game_state, current_depth):
                 return other_game_state.getScore()
             value = float('Inf')
@@ -206,36 +210,53 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             for action in other_game_state.getLegalActions(agent_index):
                 # We have now iterated through all the ghosts, so now pacman.
                 if agent_index == number_of_ghosts:
-                    value = min(value, max_value(other_game_state.generateSuccessor(agent_index, action), current_depth))
+                    value = min(value, max_value(other_game_state.generateSuccessor(agent_index, action), current_depth,
+                                                 alpha, beta))
                 else:
                     # Still calculating for ghost. Run again after for next agent.
-                    value = min(value, min_value(other_game_state.generateSuccessor(agent_index, action), current_depth, agent_index + 1))
+                    value = min(value, min_value(other_game_state.generateSuccessor(agent_index, action), current_depth,
+                                                 agent_index + 1, alpha, beta))
+                    if cutoff_test_alpha(value, alpha):
+                        return value
+                    beta = min(value, beta)
             return value
 
         # Method decides whether game is finished or not. If it is, return score for current state.
+
         def is_fin(other_game_state, other_depth):
             return other_game_state.isWin() or other_game_state.isLose() or other_depth == self.depth
 
-        def abpruning(start_game_state):
+        # Method that decides whether or not the algo should continue on current node for alpha test
+        # Returns true if algo should cut.
+        def cutoff_test_alpha(value, alpha):
+            print value, alpha
+            return value <= alpha
+
+        # Method that decides whether or not the algo should continue on current node for beta test
+        # Returns true if algo should cut.
+        def cutoff_test_beta(value, beta):
+            print value, beta
+            return value >= beta
+
+        def alpha_beta_prune(start_game_state):
             return_action = None
 
             best_value = -float('Inf')
-            # OH MY FUCKING GOD
+            alpha = float('-Inf')
+            beta = float('Inf')
 
-            print start_game_state.getLegalActions(0)
-            for shit in start_game_state.getLegalActions(0):
-                print shit
+            for possible_action in start_game_state.getLegalActions(0):
                 current_depth = 0
 
-                value = min_value(start_game_state.generateSuccessor(0, shit), current_depth, 1)
+                value = min_value(start_game_state.generateSuccessor(0, possible_action), current_depth, 1, alpha, beta)
                 if value > best_value:
                     best_value = value
-                    return_action = shit
+                    return_action = possible_action
 
             return return_action
 
         number_of_ghosts = gameState.getNumAgents() - 1
-        return abpruning(gameState)
+        return alpha_beta_prune(gameState)
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
