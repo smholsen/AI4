@@ -203,7 +203,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
         def max_value(other_game_state, current_depth, alpha, beta):
             to_return = []
-            best = -float('Inf')
+            best = float('-Inf')
             actions = other_game_state.getLegalActions(0)
             if len(actions) == 0:
                 return [self.evaluationFunction(other_game_state), None]
@@ -248,8 +248,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         def cutoff_test_beta(value, beta):
             return value > beta
 
-        res = main(gameState, 0, -float("inf"), float("inf"))
-        return res[1]
+        return main(gameState, 0, -float("inf"), float("inf"))[1]
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
