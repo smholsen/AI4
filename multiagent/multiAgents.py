@@ -191,7 +191,8 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
         def main(current_game_state, current_depth, alpha, beta):
 
-            if current_depth == self.depth * current_game_state.getNumAgents() or current_game_state.isWin() or current_game_state.isLose():
+            if current_depth == self.depth * current_game_state.getNumAgents() or current_game_state.isWin() or \
+                    current_game_state.isLose():
                 return [self.evaluationFunction(current_game_state), None]
 
             if current_depth % current_game_state.getNumAgents() == 0:
@@ -201,15 +202,15 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 # ghosts
                 return min_value(current_game_state, current_depth, alpha, beta)
 
-        def max_value(other_game_state, current_depth, alpha, beta):
+        def max_value(current_game_state, current_depth, alpha, beta):
             to_return = []
             best = float('-Inf')
-            actions = other_game_state.getLegalActions(0)
+            actions = current_game_state.getLegalActions(0)
             if len(actions) == 0:
-                return [self.evaluationFunction(other_game_state), None]
+                return [self.evaluationFunction(current_game_state), None]
             for action in actions:
-                next_state = other_game_state.generateSuccessor(0, action)
-                value = main(next_state, current_depth+1, alpha, beta)
+                next_state = current_game_state.generateSuccessor(0, action)
+                value = main(next_state, current_depth+1, alpha, beta)[0]
                 if value > best:
                     best = value
                     to_return = [best, action]
@@ -218,16 +219,17 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 alpha = max(best, alpha)
             return to_return
 
-        def min_value(other_game_state, current_depth, alpha, beta):
+        def min_value(current_game_state, current_depth, alpha, beta):
             to_return = []
             best = float('Inf')
 
-            actions = other_game_state.getLegalActions(current_depth % other_game_state.getNumAgents())
+            actions = current_game_state.getLegalActions(current_depth % current_game_state.getNumAgents())
             if len(actions) == 0:
-                return [self.evaluationFunction(other_game_state), None]
+                return [self.evaluationFunction(current_game_state), None]
             for action in actions:
-                next_state = other_game_state.generateSuccessor(current_depth % other_game_state.getNumAgents(), action)
-                value = main(next_state, current_depth + 1, alpha, beta)
+                next_state = current_game_state.generateSuccessor(current_depth % current_game_state.getNumAgents(),
+                                                                  action)
+                value = main(next_state, current_depth + 1, alpha, beta)[0]
 
                 if value < best:
                     best = value
